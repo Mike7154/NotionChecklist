@@ -1,0 +1,51 @@
+import mlfiles
+import os
+import pprint as pp
+
+from notion.client import Client
+
+
+token = mlfiles.load_setting("Gen","token")
+items_id = mlfiles.load_setting("Gen","checklist_items")
+instance_id = mlfiles.load_setting("Gen","checklist_instance")
+# Initialize the client with an access token
+client = Client(access_token=token)
+
+# Get the source and destination databases by their ids
+source_db = client.get_database(items_id)
+dest_db = client.get_database(instance_id)
+
+# Define a filter object that matches pages where Archive and add_next are both true
+filter_obj = {
+  "and": [
+    {
+      "property": "Archive",
+      "checkbox": {
+        "equals": False
+      }
+    },
+    {
+      "property": "add_next",
+      "checkbox": {
+        "equals": True
+      }
+    }
+  ]
+}
+
+# Query the pages in the source database that match the filter
+pages = client.query_database_pages(items_id, filters=filter_obj)
+results = pages['results']
+pp.pprint(results)
+# Loop through each page and create a copy in the destination database
+for i, page_id in enumerate(results):
+  # Get the page object from the page id
+  page = client.get_page(page_id)
+  # Get the name of the page as a string
+  name = page.get_property("Name")
+  # Create a relation object that links to the original page
+  relation = [{"id": page.id}]
+  # Create a new page in the destination database with only the name and relation properties
+  new_page = client.create_page(parent={"database_id": instance_id}, properties={"Name": name, "Checklist Item": relation})
+  # Print the status of the loop
+  print(f"Copying page {i+1} of {len(results)}: {name.title}")
