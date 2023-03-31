@@ -441,4 +441,34 @@ def next_date_matching_list(day_list, pattern, interval, from_date = datetime.da
     result_list = [next_date_matching_pattern(from_date,day_pattern, pattern, interval) for day_pattern in word_list]
     return sorted(result_list)
 
+def check_dates(date_list, d):
+    # Convert the current date and time to a date object
+    today = datetime.datetime.now().date()
 
+    # Add 7 days to the current date using timedelta
+    seven_days_later = today + datetime.timedelta(days=d)
+
+    # Loop through the date list and compare each date with seven_days_later
+    for date in date_list:
+        # Convert the date string to a date object
+        date_obj = date
+        
+        # Check if the date is later than seven_days_later
+        if date_obj > seven_days_later:
+            return True # Return True as soon as one date is found
+    
+    return False # Return False if no date is found
+
+def all_dates_matching_lsit(day_list, pattern, interval, days = 7, from_date = datetime.date.today()):
+    total_list = []
+    cont = True
+    start_date = from_date
+    while cont == True:
+        total_list.extend(next_date_matching_list(day_list, pattern, interval, start_date))
+        start_date = start_date + datetime.timedelta(days=1)
+        if check_dates(total_list, days):
+            cont = False
+    date_set = set(total_list)
+    date_list = list(date_set)
+    date_list = sorted(date_list)
+    return date_list

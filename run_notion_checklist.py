@@ -56,7 +56,7 @@ for page in results:
     if interval_type != 'Daily':
       nth = page['properties']['on']['rich_text'][0]['plain_text']
       units = page['properties']['Units']['select']['name']
-    dates = mldates.next_date_matching_list(nth, units, interval_type)
+    dates = mldates.all_dates_matching_lsit(nth, units, interval_type)
     for next_date in dates:
       # Check if there is an entry with the same date and checklist item in the destination database
       exist = False
