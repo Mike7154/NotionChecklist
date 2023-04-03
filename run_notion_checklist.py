@@ -53,6 +53,8 @@ for page in results:
     # Create a relation object that links to the original page
     relation = [{"id": page_id}]
     interval_type = page['properties']['Type']['select']['name']
+    nth = "1"
+    units = "Days"
     if interval_type != 'Daily':
       nth = page['properties']['on']['rich_text'][0]['plain_text']
       units = page['properties']['Units']['select']['name']
@@ -92,4 +94,4 @@ for page in results:
   except IndexError as e:
     # If there is an IndexError, print it and continue to the next item
     print("Error:", e)
-    continue
+    pass
